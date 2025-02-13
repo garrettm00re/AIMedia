@@ -1,9 +1,3 @@
-import requests
-from bs4 import BeautifulSoup
-from datetime import datetime
-import re
-from urllib.parse import parse_qs, urlparse
-from base64 import b64decode
 from newspaper import Article
 from utils import get_final_url
 
@@ -20,6 +14,8 @@ class News:
     def __hash__(self):
         return hash(self.link)
     
+    def __str__(self):
+        return f"{self.title}\n{self.published}\n\n{self.mainText}"
     
     def _getMainText(self, link):
         """

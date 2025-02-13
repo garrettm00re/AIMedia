@@ -16,3 +16,16 @@ def get_final_url(url):
             return 'ERROR: Encountered exception and can not decode URL'
     else:
         return url
+
+def saveAudio(audio, path):
+    with open(path, "wb") as f:
+        for chunk in audio:
+            f.write(chunk)
+            
+def save(fileContents, path):
+    if isinstance(fileContents, bytes):
+        with open(path, "wb") as f:
+            f.write(fileContents)
+    else:
+        with open(path, "w") as f:
+            f.write(fileContents)
