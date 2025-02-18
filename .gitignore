@@ -1,1 +1,14 @@
 .env
+assets/*
+deprecated/*
+tmp/*
+__pycache__/*
+*.mp3
+*.zip
+*.pkl
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff

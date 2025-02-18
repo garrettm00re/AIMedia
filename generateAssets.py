@@ -63,8 +63,10 @@ def generate_script(client: OpenAI, trend_data: Dict, news_report: str, script_p
 def generate_narration(client: OpenAI, script: str, narration_path: str) -> str:
     """Generate a narration using GPT-4 based on the script"""
 
-    prompt = f"""Extract the words to be spoken from this video script:
-    Script: {script}
+    prompt = f"""Extract only the words to be spoken from this video script:
+    Script: {script}.
+
+    The result should NOT include any mention of a narrator or scene descriptions.
     """
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -148,6 +150,8 @@ def generate_assets(trend_data: Dict, openai_api_key: str, elevenlabs_api_key: s
     script = generate_script(client, trend_data, news_report=news_report, script_path=script_path) # Generate script
     narration = generate_narration(client, script, narration_path) # Generate narration
     sora_prompts = generate_sora_prompts(client, script, sora_prompt_dir) # Generate Sora prompts
+
+    return
     generate_voice(narration = narration, voice_id = voice_id, audio_path = audio_path) # Generate voice over
 
     for prompt in sora_prompts:
