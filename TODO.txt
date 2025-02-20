@@ -1,0 +1,7 @@
+#1 design a grok image prompt generator and improve sora prompts
+#2 make a grok image generator
+#3 make a sora video generator
+
+
+
+# limit the number of valid news article to conserve tokens

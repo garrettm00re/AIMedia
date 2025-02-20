@@ -41,7 +41,7 @@ def generate_script(client: OpenAI, trend_data: Dict, news_report: str, script_p
 
     """Generate a video script using GPT-4 based on trend data"""
     
-    prompt = f"""Create a short, engaging 30-second video script about this trending business/finance topic:
+    prompt = f"""Create a short, engaging 30-second video script about this trending topic:
     Topic: {trend_data['keyword']}
     Related Keywords: {', '.join(trend_data['keywords'])}
     News Report: {news_report}
@@ -49,8 +49,12 @@ def generate_script(client: OpenAI, trend_data: Dict, news_report: str, script_p
     The script should be:
     1. Informative and factual
     2. Suitable for a business audience
-    3. Conversational script.
-    4. At most 30 seconds in length."""
+    3. Conversational and concise.
+    4. At most 30 seconds in length.
+
+    The script should NOT:
+    1. Contain an outro of any kind, or mention subscribing to the channel
+    2. Use acronyms or abbreviations without explanation"""
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -123,7 +127,12 @@ def generate_video(prompt: str, video_path: str) -> None:
     client = Sora()
     client.generate_video(prompt, video_path)
 
-def generate_assets(trend_data: Dict, openai_api_key: str, elevenlabs_api_key: str, voice_id: str, run_dir: str) -> Dict:
+def generate_image(prompt: str, image_path: str) -> None:
+    """Generate an image using Grok"""
+    client = Grok()
+    client.generate_image(prompt, image_path)
+
+def generate_assets(trend_data: Dict, openai_api_key: str, elevenlabs_api_key: str, voice_id: str, run_dir: str, config : dict = {}) -> Dict:
     """Main function to generate all assets for a trending topic"""
 
     # Setup
@@ -145,17 +154,21 @@ def generate_assets(trend_data: Dict, openai_api_key: str, elevenlabs_api_key: s
     audio_path = os.path.join(topic_dir, "voiceover.mp3")
     video_path = os.path.join(topic_dir, "video.mp4")
     narration_path = os.path.join(topic_dir, "narration.txt")
+
     # Generate assets
-    news_report = getNewsReport(client, trend_data, news_report_path)
-    script = generate_script(client, trend_data, news_report=news_report, script_path=script_path) # Generate script
-    narration = generate_narration(client, script, narration_path) # Generate narration
-    sora_prompts = generate_sora_prompts(client, script, sora_prompt_dir) # Generate Sora prompts
+    if 'news_report' in config and config['news_report']:
+        news_report = getNewsReport(client, trend_data, news_report_path)
+        if 'script' in config and config['script']:
+            script = generate_script(client, trend_data, news_report=news_report, script_path=script_path) # Generate script
+            if 'narration' in config and config['narration']:
+                narration = generate_narration(client, script, narration_path) # Generate narration
+                if 'voice' in config and config['voice']:
+                    generate_voice(narration = narration, voice_id = voice_id, audio_path = audio_path) # Generate voice over
+            if 'sora_prompts' in config and config['sora_prompts']:
+                sora_prompts = generate_sora_prompts(client, script, sora_prompt_dir) # Generate Sora prompts
 
-    return
-    generate_voice(narration = narration, voice_id = voice_id, audio_path = audio_path) # Generate voice over
-
-    for prompt in sora_prompts:
-            generate_video(prompt, video_path) # Generate video
+    # for prompt in sora_prompts:
+    #     generate_video(prompt, video_path) # Generate video
     
     return {"paths" : {
         "script": script_path,
@@ -165,25 +178,3 @@ def generate_assets(trend_data: Dict, openai_api_key: str, elevenlabs_api_key: s
         "news_report": news_report_path
     }
     }
-
-# Example usage:
-if __name__ == "__main__":
-    # Load environment variables for API keys
-    openai_api_key = os.getenv("OPENAI_API_KEY")
-    elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
-    voice_id = os.getenv("ELEVENLABS_VOICE_ID", "default_voice_id")
-    
-    # Example trend data
-    trend_data = {
-        "keyword": "Example Trend",
-        "volume": 10000,
-        "volume_growth_pct": 200,
-        "keywords": ["keyword1", "keyword2"]
-    }
-    
-    result = generate_assets(
-        trend_data=trend_data,
-        openai_api_key=openai_api_key,
-        elevenlabs_api_key=elevenlabs_api_key,
-        voice_id=voice_id
-    ) 
