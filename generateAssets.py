@@ -21,7 +21,7 @@ def getNewsReport(client: OpenAI, trend_data: Dict, news_report_path: str) -> st
     """
     validArticles = 0
     for newsArticle in trend_data['news']:
-        if newsArticle.mainText is not None:
+        if newsArticle.mainText is not None: ## THIS SUCKS AS A MEANS OF FILTERING. NEED SOMETHING MORE ROBUST THAT ACTUALLY VALIDATES (AND POSSIBLY WEIGHS) THE QUALITY OF EACH ARTICLE
             prompt += f"{newsArticle}\n\n"
             validArticles += 1
 
@@ -93,7 +93,10 @@ def generate_sora_prompts(client: OpenAI, script: str, prompts_path: str, num_pr
     2. Focus on business/professional settings
     3. Include camera movements and transitions
     4. Keep each scene description under 400 characters
-    
+
+    Do NOT:
+    1. Generate a scene for an outro
+    2. Use acronyms or abbreviations without explanation
     """
     
     for i in range(num_prompts):
@@ -120,7 +123,6 @@ def generate_voice(narration: str, voice_id: str, audio_path: str, output_format
         output_format=output_format,
     )
     saveAudio(audio, audio_path)
-    play(audio)
 
 def generate_video(prompt: str, video_path: str) -> None:
     """Generate a video using Sora"""
@@ -157,6 +159,7 @@ def generate_assets(trend_data: Dict, openai_api_key: str, elevenlabs_api_key: s
 
     # Generate assets
     if 'news_report' in config and config['news_report']:
+        print('hello')
         news_report = getNewsReport(client, trend_data, news_report_path)
         if 'script' in config and config['script']:
             script = generate_script(client, trend_data, news_report=news_report, script_path=script_path) # Generate script

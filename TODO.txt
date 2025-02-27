@@ -1,7 +1,12 @@
+#0 introduce a hardline cap on the number of news articles to collect/use
 #1 design a grok image prompt generator and improve sora prompts
 #2 make a grok image generator
 #3 make a sora video generator
 
-
+# how to make article content more interesting?:
+ - ideas:
+   - pit two companies against each other
+   - stock market summary in the event all other headlines are boring? Make it focus on key trends in the markets
+   
 
 # limit the number of valid news article to conserve tokens
