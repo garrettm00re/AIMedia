@@ -9,7 +9,9 @@ class Grok:
             "Authorization": f"Bearer {self.api_key}"
         }
         self.model = model
-        self.data = {
+        self.stream = stream
+        self.temperature = temperature
+        self.data = lambda prompt, temperature: {
             "messages": [
                 {
                     "role": "system", 
@@ -17,16 +19,16 @@ class Grok:
                 },
                 {
                     "role": "user",
-                    "content": ""
+                    "content": prompt
                 }
             ],
-            "model": model,
-            "stream": stream,
-            "temperature": temperature
-        } 
-    def generate_text(self, prompt, return_json=False):
-        self.data["messages"][1]["content"] = prompt
-        response = requests.post(self.url, headers=self.headers, json=self.data)
+            "model": self.model,
+            "stream": self.stream,
+            "temperature": self.temperature if temperature is None else temperature
+        }
+
+    def generate_text(self, prompt, temperature=None, return_json=False):
+        response = requests.post(self.url, headers=self.headers, json=self.data(prompt, temperature))
         if return_json:
             return response.json()
         else:

@@ -112,9 +112,9 @@ def generate_sora_prompts(client: OpenAI, script: str, prompts_path: str, num_pr
     return soraScripts
 
 
-def generate_voice(narration: str, voice_id: str, audio_path: str, output_format: str = "mp3_44100_128") -> bytes:
+def generate_voice(narration: str, voice_id: str, audio_path: str, elevenlabs_api_key: str, output_format: str = "mp3_44100_128") -> bytes:
     """Generate text-to-speech audio using Eleven Labs"""
-    client = ElevenLabs()
+    client = ElevenLabs(api_key=elevenlabs_api_key)
     print(voice_id, 'voice_id')
     audio = client.text_to_speech.convert(
         text=narration,
@@ -159,14 +159,13 @@ def generate_assets(trend_data: Dict, openai_api_key: str, elevenlabs_api_key: s
 
     # Generate assets
     if 'news_report' in config and config['news_report']:
-        print('hello')
         news_report = getNewsReport(client, trend_data, news_report_path)
         if 'script' in config and config['script']:
             script = generate_script(client, trend_data, news_report=news_report, script_path=script_path) # Generate script
             if 'narration' in config and config['narration']:
                 narration = generate_narration(client, script, narration_path) # Generate narration
                 if 'voice' in config and config['voice']:
-                    generate_voice(narration = narration, voice_id = voice_id, audio_path = audio_path) # Generate voice over
+                    generate_voice(narration = narration, voice_id = voice_id, audio_path = audio_path, elevenlabs_api_key = elevenlabs_api_key) # Generate voice over
             if 'sora_prompts' in config and config['sora_prompts']:
                 sora_prompts = generate_sora_prompts(client, script, sora_prompt_dir) # Generate Sora prompts
 
