@@ -14,3 +14,4 @@ __pycache__/*
 *.tiff
 .env.cycle
  
+*.pkl
