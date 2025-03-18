@@ -1,0 +1,15 @@
+# random notes 2-17 on algo improvement:
+
+- "weight" articles parsed based on recency (more recent articles are weighted more heavily)
+- news sources miss things social media has --> should hit some of those APIs
+- can help daniel by creating targeted sora prompts 
+- can help daniel by creating grok prompts for specific images
+
+# Alterations to algo, 2/24
+- shorter length per scene, but more scenes
+- each scene should be more exciting/dramatic/crazy
+
+# My thoughs on how to do that:
+- make script with GROK not GPT-4o --> this will make asset generation downstream much easier
+
+## AI VIDEO EDITOR // AI VIDEO EDITING WORKFLOW IS THE KEY MISSING PIECE TO A FULLY OPTIMIZED PIPELINE
