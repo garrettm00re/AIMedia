@@ -8,16 +8,31 @@ from selenium.webdriver.common.keys import Keys
 import numpy as np
 
 class SoraVideoGenerator:
-    def __init__(self, myuserprofile: str):
+    def __init__(self, myuserprofile: str, debug = False):
         options = webdriver.ChromeOptions()
         
         # Use your existing Chrome profile
         options.add_argument(f'--user-data-dir={myuserprofile}')
-
         self.driver = webdriver.Chrome(options=options)
-        time.sleep(6 + np.random.randint(0, 10) / 6)
+
+        wait = WebDriverWait(self.driver, 10)
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "textarea")))
         self.textarea = self.find_text_area()
 
+        if debug:
+            print("Debug mode enabled")
+            print("URL:", self.driver.current_url)
+            with open("page_source.html", "w") as f:
+                f.write(self.driver.page_source)
+            print("TEXTAREAS", self.find_all_textareas())
+
+
+    def get_focused_element(self):
+        return self.driver.switch_to.active_element
+    
+    def find_all_textareas(self):
+        return self.driver.find_elements(By.CSS_SELECTOR, "textarea")
+    
     def enterPrompt(self, prompt: str):
         # Find and enter text into the prompt textarea
         textarea = self.textarea
@@ -63,7 +78,7 @@ class SoraVideoGenerator:
     
     def find_text_area(self):
         return self.driver.find_element("css selector", 
-            "textarea.flex.w-full.rounded-md[placeholder='Describe your video...']")
+            "textarea[placeholder='Describe your video...']")
 
     def detect_queue_length(self):
         # Check for notification bell SVG to detect queue length
@@ -90,4 +105,12 @@ class SoraVideoGenerator:
             time.sleep(1 + np.random.randint(0, 10) / 6)
             while self.detect_queue_length() == 1:
                 time.sleep(1 + np.random.randint(0, 10) / 6)
-        self.driver.quit()
+
+    def isAlive(self):
+        try:
+            # Check if driver exists and can access current_url
+            _ = self.driver.current_url
+            return True
+        except:
+            return False
+

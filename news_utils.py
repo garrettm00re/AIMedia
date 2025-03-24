@@ -34,7 +34,9 @@ class News:
             full_text = article.text
             # Optionally, you can also get other metadata
             title = article.title
+            self.title = title if self.title is None else self.title
             publish_date = article.publish_date
+            self.published = publish_date.strftime('%Y-%m-%d %H:%M:%S') if self.published is None else self.published
             
             return full_text
         
